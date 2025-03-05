@@ -41,7 +41,7 @@ const Profile = () => {
           first_name: formState.firstName,
           last_name: formState.lastName,
           avatar_url: formState.avatarUrl,
-          updated_at: new Date()
+          updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
       
