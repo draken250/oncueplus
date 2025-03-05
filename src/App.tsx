@@ -9,6 +9,7 @@ import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import ProjectManagement from "./pages/ProjectManagement";
 import FormBuilder from "./pages/FormBuilder";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
@@ -32,6 +33,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/projects" 
+              element={
+                <ProtectedRoute>
+                  <ProjectManagement />
                 </ProtectedRoute>
               } 
             />

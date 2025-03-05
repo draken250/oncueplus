@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -10,7 +9,8 @@ import {
   Users, 
   FileText, 
   CalendarDays,
-  ArrowUpRight
+  ArrowUpRight,
+  MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -166,9 +166,11 @@ const Dashboard = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" /> New Project
-                </Button>
+                <Link to="/projects">
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" /> New Project
+                  </Button>
+                </Link>
               </div>
             </div>
             
@@ -240,7 +242,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <Link
-                      to={`/project/${project.id}`}
+                      to={`/projects`}
                       className="text-primary hover:text-primary/80 text-sm font-medium flex items-center"
                     >
                       Details <ArrowUpRight className="ml-1 h-3 w-3" />
@@ -257,9 +259,16 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
-                  <Plus className="mr-2 h-4 w-4" /> New Project
-                </Button>
+                <Link to="/projects">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Plus className="mr-2 h-4 w-4" /> New Project
+                  </Button>
+                </Link>
+                <Link to="/projects">
+                  <Button variant="outline" className="w-full justify-start">
+                    <MessageCircle className="mr-2 h-4 w-4" /> Message Client
+                  </Button>
+                </Link>
                 <Button variant="outline" className="w-full justify-start">
                   <FileText className="mr-2 h-4 w-4" /> Create Invoice
                 </Button>
