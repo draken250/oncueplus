@@ -1,5 +1,5 @@
 
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
 
 interface FeatureCardProps {
@@ -7,15 +7,17 @@ interface FeatureCardProps {
   title: string;
   description: string;
   className?: string;
+  style?: CSSProperties;
 }
 
-const FeatureCard: FC<FeatureCardProps> = ({ icon, title, description, className }) => {
+const FeatureCard: FC<FeatureCardProps> = ({ icon, title, description, className, style }) => {
   return (
     <div 
       className={cn(
         "group relative overflow-hidden rounded-xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-card border border-border",
         className
       )}
+      style={style}
     >
       <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-primary/10 p-2 text-primary">
         {icon}

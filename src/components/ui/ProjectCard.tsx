@@ -1,5 +1,5 @@
 
-import { FC } from 'react';
+import { FC, CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarClock, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -18,15 +18,17 @@ export interface Project {
 interface ProjectCardProps {
   project: Project;
   className?: string;
+  style?: CSSProperties;
 }
 
-const ProjectCard: FC<ProjectCardProps> = ({ project, className }) => {
+const ProjectCard: FC<ProjectCardProps> = ({ project, className, style }) => {
   return (
     <div 
       className={cn(
         "group relative overflow-hidden rounded-xl p-6 transition-all duration-300 hover:shadow-md bg-card border border-border",
         className
       )}
+      style={style}
     >
       <div className="flex items-start justify-between mb-4">
         <div>
