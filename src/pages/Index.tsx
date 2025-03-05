@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -18,9 +17,11 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import AnimatedGradient from '@/components/ui/AnimatedGradient';
 import FeatureCard from '@/components/ui/FeatureCard';
+import { useAuth } from '@/contexts/AuthContext';
 
 const HomePage = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     setIsVisible(true);
@@ -99,12 +100,26 @@ const HomePage = () => {
               collect client information, and deliver exceptional results.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in animation-delay-300">
-              <Button size="lg" className="px-6 rounded-md">
-                Get Started <ArrowRight size={16} className="ml-2" />
-              </Button>
-              <Button size="lg" variant="outline" className="px-6 rounded-md">
-                Book a Demo
-              </Button>
+              {user ? (
+                <Button size="lg" className="px-6 rounded-md" asChild>
+                  <Link to="/dashboard">
+                    Go to Dashboard <ArrowRight size={16} className="ml-2" />
+                  </Link>
+                </Button>
+              ) : (
+                <>
+                  <Button size="lg" className="px-6 rounded-md" asChild>
+                    <Link to="/auth?tab=signup">
+                      Get Started <ArrowRight size={16} className="ml-2" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" className="px-6 rounded-md" asChild>
+                    <Link to="/auth">
+                      Sign In
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
           

@@ -2,12 +2,21 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, profile, signOut } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -31,6 +40,16 @@ const Header = () => {
     { label: 'Form Builder', path: '/form-builder' },
     { label: 'Projects', path: '/project' }
   ];
+
+  // Get user initials for avatar fallback
+  const getUserInitials = () => {
+    if (profile?.first_name && profile?.last_name) {
+      return `${profile.first_name.charAt(0)}${profile.last_name.charAt(0)}`;
+    } else if (user?.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
+    return 'U';
+  };
 
   return (
     <header
@@ -71,12 +90,41 @@ const Header = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="outline" size="sm" className="rounded-full px-5">
-            Sign In
-          </Button>
-          <Button size="sm" className="rounded-full px-5">
-            Get Started
-          </Button>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar>
+                    <AvatarImage src={profile?.avatar_url || ''} />
+                    <AvatarFallback className="bg-primary/10 text-primary">
+                      {getUserInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link to="/profile" className="cursor-pointer flex items-center">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button variant="outline" size="sm" className="rounded-full px-5" asChild>
+                <Link to="/auth">Sign In</Link>
+              </Button>
+              <Button size="sm" className="rounded-full px-5" asChild>
+                <Link to="/auth?tab=signup">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -104,13 +152,49 @@ const Header = () => {
                   {item.label}
                 </Link>
               ))}
+              
               <div className="flex flex-col gap-3 mt-4 animate-slide-down" style={{ animationDelay: '0.25s' }}>
-                <Button variant="outline" className="w-full justify-center">
-                  Sign In
-                </Button>
-                <Button className="w-full justify-center">
-                  Get Started
-                </Button>
+                {user ? (
+                  <>
+                    <div className="flex items-center gap-3 py-2">
+                      <Avatar>
+                        <AvatarImage src={profile?.avatar_url || ''} />
+                        <AvatarFallback className="bg-primary/10 text-primary">
+                          {getUserInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium">
+                          {profile?.first_name} {profile?.last_name}
+                        </p>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                      </div>
+                    </div>
+                    <Link to="/profile">
+                      <Button variant="outline" className="w-full justify-center">
+                        <User className="h-4 w-4 mr-2" />
+                        Profile
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full justify-center"
+                      onClick={signOut}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" className="w-full justify-center" asChild>
+                      <Link to="/auth">Sign In</Link>
+                    </Button>
+                    <Button className="w-full justify-center" asChild>
+                      <Link to="/auth?tab=signup">Get Started</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
