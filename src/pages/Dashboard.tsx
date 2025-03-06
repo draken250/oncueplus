@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -10,16 +11,20 @@ import {
   FileText, 
   CalendarDays,
   ArrowUpRight,
-  MessageCircle
+  MessageCircle,
+  CheckCircle,
+  Clock3,
+  AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ProjectCard, { Project } from '@/components/ui/ProjectCard';
+import { Badge } from '@/components/ui/badge';
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -108,20 +113,70 @@ const Dashboard = () => {
   // Stats cards data
   const statsCards = [
     { title: 'Active Projects', value: '8', icon: <FileText className="h-5 w-5 text-blue-500" />, trend: '+2 from last month' },
-    { title: 'Completed Tasks', value: '24', icon: <Clock className="h-5 w-5 text-green-500" />, trend: '+5 from last week' },
+    { title: 'Completed Tasks', value: '24', icon: <CheckCircle className="h-5 w-5 text-green-500" />, trend: '+5 from last week' },
     { title: 'Active Clients', value: '12', icon: <Users className="h-5 w-5 text-purple-500" />, trend: 'Same as last month' },
     { title: 'Upcoming Deadlines', value: '5', icon: <CalendarDays className="h-5 w-5 text-red-500" />, trend: '3 this week' },
+  ];
+
+  // Pending milestones data (similar to the image)
+  const pendingMilestones = [
+    {
+      title: "Marketing Materials Development",
+      client: "Local Market Expansion - Leonard Kramer & Sons",
+      status: "pending approval",
+      dueDate: "12/20/2023"
+    },
+    {
+      title: "Loyalty Program Project Start",
+      client: "Local Market Expansion - Leonard Kramer & Sons",
+      status: "pending approval",
+      dueDate: "12/27/2023"
+    },
+    {
+      title: "Website Content Creation",
+      client: "Global Distribution Co.",
+      status: "in progress",
+      dueDate: "12/15/2023"
+    }
+  ];
+
+  // Invoice data (similar to the image)
+  const invoices = [
+    {
+      id: "INV-2023-001",
+      client: "Leonard Kramer & Sons",
+      amount: "$4,500.00",
+      issueDate: "11/29/2023",
+      dueDate: "12/29/2023",
+      status: "pending"
+    },
+    {
+      id: "INV-2023-002",
+      client: "Global Distribution Co.",
+      amount: "$3,200.00",
+      issueDate: "11/15/2023",
+      dueDate: "12/15/2023",
+      status: "paid"
+    },
+    {
+      id: "INV-2023-003",
+      client: "Tech Innovations LLC",
+      amount: "$2,800.00",
+      issueDate: "12/01/2023",
+      dueDate: "01/01/2024",
+      status: "pending"
+    }
   ];
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <main className="flex-1 py-32 max-w-7xl mx-auto w-full px-4 md:px-6">
+      <main className="flex-1 py-24 max-w-7xl mx-auto w-full px-4 md:px-6">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 animate-fade-in">Welcome Back!</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 animate-fade-in">Welcome to Your Dashboard</h1>
           <p className="text-muted-foreground animate-fade-in">
-            Here's an overview of your projects and tasks.
+            Here's an overview of your projects, milestones, and invoices.
           </p>
         </div>
         
@@ -141,152 +196,334 @@ const Dashboard = () => {
           ))}
         </div>
         
-        {/* Projects Section */}
-        <div className="animate-fade-in animation-delay-300">
-          <Tabs defaultValue="all" className="w-full">
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-              <div>
-                <h2 className="text-xl font-bold mb-2">Your Projects</h2>
-                <TabsList className="bg-muted">
-                  <TabsTrigger value="all" onClick={() => filterProjectsByStatus('all')}>All</TabsTrigger>
-                  <TabsTrigger value="active" onClick={() => filterProjectsByStatus('active')}>Active</TabsTrigger>
-                  <TabsTrigger value="pending" onClick={() => filterProjectsByStatus('pending')}>Pending</TabsTrigger>
-                  <TabsTrigger value="completed" onClick={() => filterProjectsByStatus('completed')}>Completed</TabsTrigger>
-                </TabsList>
-              </div>
-              
-              <div className="flex mt-4 md:mt-0 gap-3">
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search projects..."
-                    className="pl-9 max-w-[200px]"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <Link to="/projects">
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" /> New Project
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            
-            <TabsContent value="all" className="mt-0">
-              {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <Card key={i} className="animate-pulse">
-                      <CardContent className="p-6">
-                        <div className="h-4 bg-muted rounded w-3/4 mb-4"></div>
-                        <div className="h-3 bg-muted rounded w-1/2 mb-6"></div>
-                        <div className="h-2 bg-muted rounded w-full mb-2"></div>
-                        <div className="flex justify-between mt-6">
-                          <div className="h-3 bg-muted rounded w-1/3"></div>
-                          <div className="h-3 bg-muted rounded w-1/4"></div>
+        {/* Main Dashboard Content in Tabs */}
+        <Tabs defaultValue="overview" className="w-full animate-fade-in animation-delay-300">
+          <TabsList className="bg-muted mb-8">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="projects">Projects</TabsTrigger>
+            <TabsTrigger value="milestones">Milestones</TabsTrigger>
+            <TabsTrigger value="invoices">Invoices</TabsTrigger>
+          </TabsList>
+          
+          {/* Overview Tab */}
+          <TabsContent value="overview">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Pending Milestones Section */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl">Pending Milestones</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {pendingMilestones.map((milestone, index) => (
+                      <div key={index} className="border-b border-border pb-4 last:border-0 last:pb-0">
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="font-medium">{milestone.title}</h3>
+                          <Badge 
+                            variant="outline" 
+                            className={`${
+                              milestone.status === "pending approval" 
+                                ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200" 
+                                : "bg-blue-100 text-blue-800 hover:bg-blue-100 border-blue-200"
+                            }`}
+                          >
+                            {milestone.status}
+                          </Badge>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : filteredProjects.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProjects.map((project, index) => (
-                    <ProjectCard
-                      key={project.id}
-                      project={project}
-                      className="animate-fade-in"
-                      style={{ animationDelay: `${index * 0.1}s` }}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">No projects found. Try adjusting your search or filters.</p>
-                  <Button className="mt-4">
-                    <Plus className="h-4 w-4 mr-2" /> Create New Project
+                        <p className="text-sm text-muted-foreground">{milestone.client}</p>
+                        <div className="flex justify-between items-center mt-2">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <CalendarDays className="h-4 w-4" />
+                            <span>Due: {milestone.dueDate}</span>
+                          </div>
+                          <Button variant="ghost" size="sm" className="h-8 px-2">
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+                <CardFooter className="pt-0">
+                  <Button variant="outline" className="w-full">
+                    View All Milestones
                   </Button>
+                </CardFooter>
+              </Card>
+              
+              {/* Recent Invoices */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl">Recent Invoices</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {invoices.map((invoice, index) => (
+                      <div key={index} className="border-b border-border pb-4 last:border-0 last:pb-0">
+                        <div className="flex justify-between items-start mb-1">
+                          <h3 className="font-medium">{invoice.id}</h3>
+                          <Badge 
+                            variant="outline" 
+                            className={`${
+                              invoice.status === "pending" 
+                                ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200" 
+                                : "bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
+                            }`}
+                          >
+                            {invoice.status}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">Client: {invoice.client}</p>
+                        <div className="flex justify-between items-center mt-2">
+                          <div className="text-sm font-medium">{invoice.amount}</div>
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4" />
+                            <span>Due: {invoice.dueDate}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+                <CardFooter className="pt-0">
+                  <Button variant="outline" className="w-full">
+                    View All Invoices
+                  </Button>
+                </CardFooter>
+              </Card>
+              
+              {/* Recent Projects */}
+              <Card className="lg:col-span-2">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-xl">Recent Projects</CardTitle>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm" className="h-8">
+                        <Filter className="h-4 w-4 mr-1" /> Filter
+                      </Button>
+                      <Link to="/projects">
+                        <Button size="sm" className="h-8">
+                          <Plus className="h-4 w-4 mr-1" /> New Project
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {projects.slice(0, 4).map((project, index) => (
+                      <div key={project.id} className="border rounded-lg p-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-medium mb-1">{project.title}</h3>
+                            <p className="text-sm text-muted-foreground">Client: {project.client}</p>
+                          </div>
+                          <Badge 
+                            variant="outline" 
+                            className={`${
+                              project.status === "active" 
+                                ? "bg-green-100 text-green-800 hover:bg-green-100 border-green-200" 
+                                : project.status === "completed"
+                                ? "bg-blue-100 text-blue-800 hover:bg-blue-100 border-blue-200"
+                                : project.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200"
+                                : "bg-red-100 text-red-800 hover:bg-red-100 border-red-200"
+                            }`}
+                          >
+                            {project.status}
+                          </Badge>
+                        </div>
+                        <div className="mt-4">
+                          <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                              style={{ width: `${project.progress}%` }}
+                            ></div>
+                          </div>
+                          <div className="flex justify-between mt-2">
+                            <span className="text-xs text-muted-foreground">Progress</span>
+                            <span className="text-xs font-medium">{project.progress}%</span>
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center mt-4">
+                          <div className="flex items-center text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3 mr-1" />
+                            <span>{project.lastUpdated}</span>
+                          </div>
+                          <Button variant="ghost" size="sm" className="h-7 px-2">
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+                <CardFooter className="pt-0">
+                  <Button variant="outline" className="w-full">
+                    View All Projects
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          </TabsContent>
+          
+          {/* Projects Tab */}
+          <TabsContent value="projects">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle>Your Projects</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="search"
+                        placeholder="Search projects..."
+                        className="pl-9 max-w-[200px]"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </div>
+                    <Button variant="outline" size="sm">
+                      <Filter className="h-4 w-4 mr-1" /> Filter
+                    </Button>
+                  </div>
                 </div>
-              )}
-            </TabsContent>
-            
-            {['active', 'pending', 'completed'].map((tab) => (
-              <TabsContent key={tab} value={tab} className="mt-0">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProjects.map((project) => (
-                    <ProjectCard key={project.id} project={project} />
-                  ))}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
-        
-        {/* Recently Updated & Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-10 animate-fade-in animation-delay-500">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-lg">Recently Updated</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {projects.slice(0, 3).map((project) => (
-                  <div key={project.id} className="flex items-start justify-between border-b border-border pb-4 last:border-0 last:pb-0">
-                    <div>
-                      <h3 className="font-medium mb-1">{project.title}</h3>
-                      <p className="text-sm text-muted-foreground mb-2">Client: {project.client}</p>
-                      <div className="flex items-center text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3 mr-1" /> Updated {project.lastUpdated}
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                      <Card key={i} className="animate-pulse">
+                        <CardContent className="p-6">
+                          <div className="h-4 bg-muted rounded w-3/4 mb-4"></div>
+                          <div className="h-3 bg-muted rounded w-1/2 mb-6"></div>
+                          <div className="h-2 bg-muted rounded w-full mb-2"></div>
+                          <div className="flex justify-between mt-6">
+                            <div className="h-3 bg-muted rounded w-1/3"></div>
+                            <div className="h-3 bg-muted rounded w-1/4"></div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : filteredProjects.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredProjects.map((project, index) => (
+                      <ProjectCard
+                        key={project.id}
+                        project={project}
+                        className="animate-fade-in"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">No projects found. Try adjusting your search or filters.</p>
+                    <Button className="mt-4">
+                      <Plus className="h-4 w-4 mr-2" /> Create New Project
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          {/* Milestones Tab */}
+          <TabsContent value="milestones">
+            <Card>
+              <CardHeader>
+                <CardTitle>Project Milestones</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {pendingMilestones.concat(pendingMilestones).map((milestone, index) => (
+                    <div key={index} className="flex items-start justify-between border-b border-border pb-6 last:border-0 last:pb-0">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-medium mb-1">{milestone.title}</h3>
+                          <Badge 
+                            variant="outline" 
+                            className={`${
+                              milestone.status === "pending approval" 
+                                ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200" 
+                                : "bg-blue-100 text-blue-800 hover:bg-blue-100 border-blue-200"
+                            }`}
+                          >
+                            {milestone.status}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">{milestone.client}</p>
+                        <div className="flex items-center text-xs text-muted-foreground">
+                          <CalendarDays className="h-3 w-3 mr-1" /> Due: {milestone.dueDate}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm">View Details</Button>
+                        {milestone.status === "pending approval" && (
+                          <Button size="sm">Approve</Button>
+                        )}
                       </div>
                     </div>
-                    <Link
-                      to={`/projects`}
-                      className="text-primary hover:text-primary/80 text-sm font-medium flex items-center"
-                    >
-                      Details <ArrowUpRight className="ml-1 h-3 w-3" />
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
           
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Link to="/projects">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Plus className="mr-2 h-4 w-4" /> New Project
-                  </Button>
-                </Link>
-                <Link to="/projects">
-                  <Button variant="outline" className="w-full justify-start">
-                    <MessageCircle className="mr-2 h-4 w-4" /> Message Client
-                  </Button>
-                </Link>
-                <Button variant="outline" className="w-full justify-start">
-                  <FileText className="mr-2 h-4 w-4" /> Create Invoice
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Users className="mr-2 h-4 w-4" /> Add Client
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <BarChart className="mr-2 h-4 w-4" /> Generate Report
-                </Button>
-                <Link to="/form-builder">
-                  <Button variant="outline" className="w-full justify-start">
-                    <FileText className="mr-2 h-4 w-4" /> Create Form
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+          {/* Invoices Tab */}
+          <TabsContent value="invoices">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle>Invoices</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm">
+                      <Filter className="h-4 w-4 mr-1" /> Filter
+                    </Button>
+                    <Button size="sm">
+                      <Plus className="h-4 w-4 mr-1" /> Create Invoice
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-md border">
+                  <div className="bg-muted/50 p-4 grid grid-cols-12 font-medium text-sm">
+                    <div className="col-span-2">Invoice #</div>
+                    <div className="col-span-4">Client</div>
+                    <div className="col-span-2">Issue Date</div>
+                    <div className="col-span-2">Due Date</div>
+                    <div className="col-span-1">Amount</div>
+                    <div className="col-span-1 text-right">Status</div>
+                  </div>
+                  {invoices.concat(invoices).map((invoice, index) => (
+                    <div key={index} className="p-4 grid grid-cols-12 border-t text-sm hover:bg-muted/20">
+                      <div className="col-span-2 font-medium">{invoice.id}</div>
+                      <div className="col-span-4">{invoice.client}</div>
+                      <div className="col-span-2">{invoice.issueDate}</div>
+                      <div className="col-span-2">{invoice.dueDate}</div>
+                      <div className="col-span-1 font-medium">{invoice.amount}</div>
+                      <div className="col-span-1 text-right">
+                        <Badge 
+                          variant="outline" 
+                          className={`${
+                            invoice.status === "pending" 
+                              ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200" 
+                              : "bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
+                          }`}
+                        >
+                          {invoice.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
 
       <Footer />
