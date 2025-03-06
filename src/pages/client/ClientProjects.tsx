@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Calendar, ArrowRight, Clock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import ClientSidebar from '@/components/client/ClientSidebar';
+import ProjectDetailsDialog from '@/components/dialogs/ProjectDetailsDialog';
 
 interface Project {
   id: string;
@@ -34,6 +35,7 @@ const ClientProjects = () => {
   const { toast } = useToast();
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -91,6 +93,14 @@ const ClientProjects = () => {
     }
   };
 
+  const openProjectDetails = (project: Project) => {
+    setSelectedProject(project);
+  };
+
+  const closeProjectDetails = () => {
+    setSelectedProject(null);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -135,7 +145,11 @@ const ClientProjects = () => {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {projects.map((project) => (
-                      <Card key={project.id} className="hover:shadow-md transition-shadow">
+                      <Card 
+                        key={project.id} 
+                        className="hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => openProjectDetails(project)}
+                      >
                         <CardContent className="p-6">
                           <div className="flex justify-between items-start mb-3">
                             <h3 className="font-semibold text-lg line-clamp-1">{project.title}</h3>
@@ -197,6 +211,12 @@ const ClientProjects = () => {
           </div>
         </main>
       </div>
+      
+      <ProjectDetailsDialog 
+        project={selectedProject}
+        isOpen={!!selectedProject}
+        onClose={closeProjectDetails}
+      />
       
       <Footer />
     </div>

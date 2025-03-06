@@ -15,6 +15,8 @@ import ProjectList from '@/components/projects/ProjectList';
 import ProjectDetails from '@/components/projects/ProjectDetails';
 import ProjectForm from '@/components/projects/ProjectForm';
 import AnimatedGradient from '@/components/ui/AnimatedGradient';
+import ProjectDetailsDialog from '@/components/dialogs/ProjectDetailsDialog';
+import MilestoneDetailsDialog from '@/components/dialogs/MilestoneDetailsDialog';
 
 const ProjectManagement = () => {
   const { user, profile } = useAuth();
@@ -25,6 +27,23 @@ const ProjectManagement = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [isFreelancer, setIsFreelancer] = useState(false);
+  const [showProjectDialog, setShowProjectDialog] = useState(false);
+  const [projectForDialog, setProjectForDialog] = useState(null);
+  
+  // Mock milestone for demo purposes
+  const [showMilestoneDialog, setShowMilestoneDialog] = useState(false);
+  const [milestone, setMilestone] = useState({
+    id: '1',
+    title: 'Complete Homepage Design',
+    description: 'Finalize the homepage design including responsive layouts for mobile and tablet devices.',
+    status: 'in_progress',
+    due_date: new Date().toISOString(),
+    project_id: '1',
+    project_title: 'Website Redesign',
+    progress: 65,
+    created_at: new Date().toISOString(),
+    priority: 'medium'
+  });
 
   useEffect(() => {
     if (profile?.role === 'freelancer' || profile?.role === 'admin') {
@@ -117,6 +136,15 @@ const ProjectManagement = () => {
     setSelectedProject(null);
   };
 
+  const openProjectDialog = (project) => {
+    setProjectForDialog(project);
+    setShowProjectDialog(true);
+  };
+
+  const openMilestoneDialog = () => {
+    setShowMilestoneDialog(true);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -153,11 +181,17 @@ const ProjectManagement = () => {
                   />
                 </div>
                 
-                {isFreelancer && (
-                  <Button onClick={() => setShowProjectForm(true)}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> New Project
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={openMilestoneDialog}>
+                    View Sample Milestone
                   </Button>
-                )}
+                  
+                  {isFreelancer && (
+                    <Button onClick={() => setShowProjectForm(true)}>
+                      <PlusCircle className="mr-2 h-4 w-4" /> New Project
+                    </Button>
+                  )}
+                </div>
               </div>
               
               <Tabs defaultValue="all" className="w-full">
@@ -172,7 +206,7 @@ const ProjectManagement = () => {
                   <ProjectList 
                     projects={filteredProjects} 
                     isLoading={loading} 
-                    onProjectClick={handleProjectClick}
+                    onProjectClick={(project) => openProjectDialog(project)}
                     isFreelancer={isFreelancer}
                   />
                 </TabsContent>
@@ -181,7 +215,7 @@ const ProjectManagement = () => {
                   <ProjectList 
                     projects={filteredProjects.filter(p => p.status === 'active')} 
                     isLoading={loading} 
-                    onProjectClick={handleProjectClick}
+                    onProjectClick={(project) => openProjectDialog(project)}
                     isFreelancer={isFreelancer}
                   />
                 </TabsContent>
@@ -190,7 +224,7 @@ const ProjectManagement = () => {
                   <ProjectList 
                     projects={filteredProjects.filter(p => p.status === 'completed')} 
                     isLoading={loading} 
-                    onProjectClick={handleProjectClick}
+                    onProjectClick={(project) => openProjectDialog(project)}
                     isFreelancer={isFreelancer}
                   />
                 </TabsContent>
@@ -199,7 +233,7 @@ const ProjectManagement = () => {
                   <ProjectList 
                     projects={filteredProjects.filter(p => p.status === 'paused')} 
                     isLoading={loading} 
-                    onProjectClick={handleProjectClick}
+                    onProjectClick={(project) => openProjectDialog(project)}
                     isFreelancer={isFreelancer}
                   />
                 </TabsContent>
@@ -215,6 +249,18 @@ const ProjectManagement = () => {
           )}
         </div>
       </main>
+      
+      <ProjectDetailsDialog 
+        project={projectForDialog}
+        isOpen={showProjectDialog}
+        onClose={() => setShowProjectDialog(false)}
+      />
+      
+      <MilestoneDetailsDialog
+        milestone={milestone}
+        isOpen={showMilestoneDialog}
+        onClose={() => setShowMilestoneDialog(false)}
+      />
       
       <Footer />
     </div>
