@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,6 +17,19 @@ import AnimatedGradient from '@/components/ui/AnimatedGradient';
 import ProjectDetailsDialog from '@/components/dialogs/ProjectDetailsDialog';
 import MilestoneDetailsDialog from '@/components/dialogs/MilestoneDetailsDialog';
 
+interface Milestone {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'not_started' | 'in_progress' | 'completed' | 'on_hold';
+  due_date?: string;
+  project_id: string;
+  project_title?: string;
+  progress?: number;
+  created_at: string;
+  priority?: 'low' | 'medium' | 'high';
+}
+
 const ProjectManagement = () => {
   const { user, profile } = useAuth();
   const { toast } = useToast();
@@ -30,9 +42,8 @@ const ProjectManagement = () => {
   const [showProjectDialog, setShowProjectDialog] = useState(false);
   const [projectForDialog, setProjectForDialog] = useState(null);
   
-  // Mock milestone for demo purposes
   const [showMilestoneDialog, setShowMilestoneDialog] = useState(false);
-  const [milestone, setMilestone] = useState({
+  const [milestone, setMilestone] = useState<Milestone>({
     id: '1',
     title: 'Complete Homepage Design',
     description: 'Finalize the homepage design including responsive layouts for mobile and tablet devices.',
