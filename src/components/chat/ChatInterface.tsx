@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,9 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { SendHorizontal, ArrowDownCircle, Loader2 } from 'lucide-react';
-import { format } from 'date-fns';
 import ChatMessage from './ChatMessage';
 
 interface Message {
@@ -49,14 +46,28 @@ const ChatInterface = ({ projectId, receiverId, receiverName }: ChatInterfacePro
       try {
         setIsLoading(true);
         
-        // Create messages table if it doesn't exist
-        await createMessagesTableIfNeeded();
+        // Check if table exists by querying it
+        const { error: checkError } = await supabase
+          .from('project_messages')
+          .select('id')
+          .limit(1);
         
+        if (checkError) {
+          console.error('Error checking project_messages table:', checkError);
+          toast({
+            title: 'Chat system needs setup',
+            description: 'Please contact support to complete chat setup.',
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        // Fetch messages with sender profile information
         const { data, error } = await supabase
           .from('project_messages')
           .select(`
             *,
-            sender:sender_id(first_name, last_name, avatar_url)
+            sender:profiles!sender_id(first_name, last_name, avatar_url)
           `)
           .eq('project_id', projectId)
           .or(`sender_id.eq.${user?.id},receiver_id.eq.${user?.id}`)
@@ -64,7 +75,7 @@ const ChatInterface = ({ projectId, receiverId, receiverName }: ChatInterfacePro
         
         if (error) throw error;
         
-        setMessages(data || []);
+        setMessages(data as Message[] || []);
       } catch (error) {
         console.error('Error fetching messages:', error);
         toast({
@@ -74,33 +85,6 @@ const ChatInterface = ({ projectId, receiverId, receiverName }: ChatInterfacePro
         });
       } finally {
         setIsLoading(false);
-      }
-    };
-
-    const createMessagesTableIfNeeded = async () => {
-      try {
-        // Try to query the table to see if it exists
-        const { error } = await supabase
-          .from('project_messages')
-          .select('id')
-          .limit(1);
-          
-        // If we get an error about the relation not existing, create it
-        if (error && error.message.includes('relation "project_messages" does not exist')) {
-          toast({
-            title: 'Setting up chat',
-            description: 'First-time chat initialization...',
-          });
-          
-          // We'll assume the user will run SQL to create the table
-          // For now, let's just notify them
-          toast({
-            title: 'Chat system needs setup',
-            description: 'Please contact support to complete chat setup.',
-          });
-        }
-      } catch (error) {
-        console.error('Error checking messages table:', error);
       }
     };
 
@@ -128,7 +112,7 @@ const ChatInterface = ({ projectId, receiverId, receiverName }: ChatInterfacePro
           const newMsg = {
             ...payload.new,
             sender: data
-          };
+          } as Message;
           
           setMessages(current => [...current, newMsg]);
           
@@ -187,8 +171,7 @@ const ChatInterface = ({ projectId, receiverId, receiverName }: ChatInterfacePro
           project_id: projectId,
           sender_id: user?.id,
           receiver_id: receiverId,
-          content: newMessage.trim(),
-          created_at: new Date().toISOString()
+          content: newMessage.trim()
         });
       
       if (error) throw error;
