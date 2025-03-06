@@ -13,6 +13,12 @@ import ProjectManagement from "./pages/ProjectManagement";
 import FormBuilder from "./pages/FormBuilder";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import ClientPortal from "./pages/ClientPortal";
+import ClientProjects from "./pages/client/ClientProjects";
+import ClientTasks from "./pages/client/ClientTasks";
+import ClientInvoices from "./pages/client/ClientInvoices";
+import ClientContracts from "./pages/client/ClientContracts";
+import ClientResources from "./pages/client/ClientResources";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +63,56 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Client Portal Routes */}
+            <Route 
+              path="/client" 
+              element={
+                <ProtectedRoute>
+                  <ClientPortal />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/client/projects" 
+              element={
+                <ProtectedRoute>
+                  <ClientProjects />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/client/tasks" 
+              element={
+                <ProtectedRoute>
+                  <ClientTasks />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/client/invoices" 
+              element={
+                <ProtectedRoute>
+                  <ClientInvoices />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/client/contracts" 
+              element={
+                <ProtectedRoute>
+                  <ClientContracts />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/client/resources" 
+              element={
+                <ProtectedRoute>
+                  <ClientResources />
                 </ProtectedRoute>
               } 
             />
