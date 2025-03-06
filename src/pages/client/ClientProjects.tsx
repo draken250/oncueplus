@@ -45,14 +45,24 @@ const ClientProjects = () => {
           .from('projects')
           .select(`
             *,
-            freelancer:freelancer_id(id, first_name, last_name, avatar_url)
+            freelancer:freelancer_id(
+              id,
+              first_name,
+              last_name,
+              avatar_url
+            )
           `)
           .eq('client_id', user.id)
           .order('updated_at', { ascending: false });
         
         if (error) throw error;
         
-        setProjects(data as Project[] || []);
+        if (data) {
+          // Ensure proper typing when setting projects
+          setProjects(data as unknown as Project[]);
+        } else {
+          setProjects([]);
+        }
       } catch (error) {
         console.error('Error fetching projects:', error);
         toast({
